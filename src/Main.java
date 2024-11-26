@@ -1,3 +1,4 @@
+//AES ENCRYPTION PROJECT - D00223094 - Dylan Murphy
 import java.util.Scanner;
 
 public class Main {
