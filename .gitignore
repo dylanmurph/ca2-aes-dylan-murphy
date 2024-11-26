@@ -27,3 +27,12 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+# IntelliJ IDEA
+.idea/
+*.iml
+/target/
+/bin/
+Thumbs.db
+*.log
+*.docx
