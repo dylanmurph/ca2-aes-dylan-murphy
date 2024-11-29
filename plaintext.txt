@@ -1,1 +1,1 @@
-plaintext
+Text to encrypt.
