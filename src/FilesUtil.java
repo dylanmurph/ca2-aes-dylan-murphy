@@ -27,30 +27,95 @@ public class FilesUtil {
         return fileNotFound(filename);
     }
 
-    //Here the user can choose to create a new file or return to re-enter the filename
+    //Function so the user can choose to create a new file
     public static boolean fileNotFound(String filename) {
         String input;
 
         while (true) {
             System.out.println("""
+                    Error: File not found.
                     Would you like to create it now?
                     1. Yes
-                    2. No""");
-            input = kb.nextLine();
+                    2. No
+                    Choose 1 or 2:(Enter '0' to return to main menu)""");
+            input = kb.nextLine().toLowerCase();
 
             switch (input) {
                 case "1":
+                case "y":
+                case "yes":
                     return createNewFile(filename);
                 case "2":
-                    System.out.println("Please try again and ensure your filename is correct.");
+                case "n":
+                case "no":
                     return false;
+                case "0":
+                    Main.showMenu();
                 default:
                     System.out.println("Please enter '1' or '2'");
             }
         }
     }
 
-    //Function to read files with an input that allows the user to enter file name or path.
+    //Function to create new files
+    public static boolean createNewFile(String filename) {
+        String input;
+
+        System.out.println(" --- New File Creation --- ");
+        while (true) {
+            //I am using a more complex regex from stack overflow: https://stackoverflow.com/a/45615798
+            //previously I used ^[a-zA-Z0-9_-.]+$ but I wanted something more robust for use in Windows
+            if (!filename.matches("\\A(?!(?:COM[0-9]|CON|LPT[0-9]|NUL|PRN|AUX|com[0-9]|con|lpt[0-9]|nul|prn|aux)|\\s|[.]{2,})[^\\\\/:*\"?<>|]{1,254}(?<![\\s.])\\z")) {
+                System.out.println("""
+                         ---------------------------------------------------------------------------------------
+                        | Invalid filename! Please try again using only alphanumeric characters and '-' '_' '.' |
+                        |   - Your file cannot end in a space or '.'                                            |
+                        |   - Your file cannot use any windows reserved words or begin with 2 dots              |
+                         ---------------------------------------------------------------------------------------""");
+
+                System.out.print("Enter File Name: ");
+                System.out.println("(Enter '0' to return to main menu)");
+                filename = kb.nextLine();
+                if (filename.equals("0")) {
+                    Main.showMenu();
+                }
+                continue;
+            }
+
+            File newFile = new File(filename);
+
+            if (newFile.isFile()) {
+                System.out.println("File " + filename + " already exists, use another name.");
+                continue;
+            }
+
+            filename = addTxtExt(filename);
+            break;
+        }
+
+        System.out.println("Enter content for the new file: (Press enter to leave blank)");
+        System.out.println("(Enter '0' to return to main menu)");
+        input = kb.nextLine();
+        if (input.equals("0")) {
+            Main.showMenu();
+        }
+
+        try {
+            writeFile(filename, input);
+            if (input.isEmpty()) {
+                System.out.println("File created successfully - However you will need to populate it before you can use it for Encrypting a file");
+                return true;
+            }
+
+            System.out.println("File created successfully, you can now use " + filename);
+            return true;
+        } catch (Exception e) {
+            System.out.println("Failed to create file: " + e.getMessage());
+            return false;
+        }
+    }
+
+    //Function to read files that allows input of file name or path.
     public static String readFile(String filename) {
         try {
             //ensuring .txt extension is at the end of the filename
@@ -68,14 +133,14 @@ public class FilesUtil {
             //checking to make sure the file has something to read
             if (fileContent.isEmpty()) {
                 System.out.println("Error: File is empty");
-                return "";
+                return null;
             }
 
             return fileContent.toString();
 
         } catch (FileNotFoundException e) {
             System.out.println("File not found error: " + e.getMessage());
-            return "";
+            return null;
         }
     }
 
@@ -90,52 +155,38 @@ public class FilesUtil {
         }
     }
 
-    //Function to create new files
-    public static boolean createNewFile(String filename) {
-        String input;
-
-        System.out.println(" --- New File Creation --- ");
-        while (true) {
-            if (!filename.matches("\\A(?!(?:COM[0-9]|CON|LPT[0-9]|NUL|PRN|AUX|com[0-9]|con|lpt[0-9]|nul|prn|aux)|\\s|[.]{2,})[^\\\\/:*\"?<>|]{1,254}(?<![\\s.])\\z")) {
+    //Function to confirm if the file is empty and warns the user before overwriting it, separate from my writeFile
+    //so it can only be used in particular scenarios.
+    public static boolean confirmFileEmpty(String filename) {
+        String fileContent = readFile(filename);
+        if (fileContent != null) {
+            while (true) {
+                System.out.println("\nChecking if " + filename + " is empty...");
                 System.out.println("""
-                     ---------------------------------------------------------------------------------------
-                    | Invalid filename! Please try again using only alphanumeric characters and '-' '_' '.' |
-                    |   - Your file cannot end in a space or '.'                                            |
-                    |   - Your file cannot use any windows reserved words or begin with 2 dots              |
-                     ---------------------------------------------------------------------------------------""");
-
-                System.out.println("Enter File Name: ");
-                filename = kb.nextLine();
-                continue;
+                        Warning: This file already contains data.
+                        Do you want to overwrite it?
+                        1. Yes
+                        2. No
+                        Choose 1 or 2: (Enter '0' to return to main menu)""");
+                String choice = kb.nextLine();
+                switch (choice) {
+                    case "1":
+                    case "y":
+                    case "yes":
+                        return true;
+                    case "2":
+                    case "n":
+                    case "no":
+                        System.out.println("File Write Canceled");
+                        return false;
+                    case "0":
+                        Main.showMenu();
+                    default:
+                        System.out.println("Please enter '1' or '2'");
+                }
             }
-
-            File newFile = new File(filename);
-
-            if (newFile.isFile()) {
-                System.out.println("File " + filename + " already exists, use another name.");
-                continue;
-            }
-
-            filename = addTxtExt(filename);
-            break;
         }
-
-        System.out.println("Enter content for the new file: ");
-        input = kb.nextLine();
-
-        try {
-            writeFile(filename, input);
-            if (input.isEmpty()) {
-                System.out.println("File created successfully - However you will need to populate it before you can use it");
-                return true;
-            }
-
-            System.out.println("File created successfully, you can now use " + filename);
-            return true;
-        } catch (Exception e) {
-            System.out.println("Failed to create file: " + e.getMessage());
-            return false;
-        }
+        return true;
     }
 
     //Function to add the .txt extension to a file in case the user doesn't include it in their input
@@ -144,5 +195,29 @@ public class FilesUtil {
             filename += ".txt";
         }
         return filename;
+    }
+
+    //Function to completely validate the file is correct to be encrypted/decrypted
+    //returns the content of a file once validated
+    public static String getValidFileContent(String prompt) {
+        String filename, fileContent;
+
+        while (true) {
+            System.out.println(prompt);
+            System.out.println("(Enter '0' to return to main menu)");
+            filename = kb.nextLine();
+            if (filename.equals("0")) {
+                Main.showMenu();
+            }
+
+            //ensures the file is a valid text file, reads and if there is content within the file to return
+            if (isValidTxt(filename)) {
+                fileContent = readFile(filename);
+                if (fileContent != null) {
+                    return fileContent;
+                }
+            }
+            System.out.println("Please Try Again");
+        }
     }
 }
