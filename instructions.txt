@@ -1,0 +1,40 @@
+This is my implementation for a Java based AES encrypt/decrypt tool.
+
+I chose to use AES with a 256 bit key as this is going to be the most secure and is just as easy to implement as 128 bit.
+
+When deciding which mode to use, I read about different modes and found AES-GCM to be considered generally better than CBC,
+however I ultimately chose CBC as I felt it was easier to understand the implementation of it in my code.
+Since it's using CBC, the intended real purpose of this implementation would only be for a single user securing their own personal files.
+
+
+Instructions:
+
+for yes or no prompts, the program will accept the number specified, or if the user inputs 'y' or 'yes'/'n' or 'no'
+at any stage you can input '0' to return to the main menu
+
+----- To encrypt a file: -----
+ - Type 1 and press enter
+ - Type the name of the file you want and press enter (this accepts filename.txt, filename or complete file path)
+
+ 	- If the file doesn't exist: You will be asked if you would like to create the file and follow the prompts. 
+
+	- If the file exists but it's not empty: You will be asked to confirm if you want to overwrite it. 
+		- if you select yes, your file will be encrypted to ciphertext.txt
+
+	- If the file exists and it's empty: Your file will be encrypted to ciphertext.txt
+- Your key is output and you should save it, otherwise you won't be able to recover your file.
+
+
+ ----- To decrypt a file: -----
+ - Type 2 and press enter
+ - Type the name of the file you want and press enter (this accepts filename.txt, filename or complete file path)
+
+	- If the file doesn't exist: You will be asked if you would like to create the file and follow the prompts. 
+
+	- If the file exists: you will be asked for a decryption key
+ 
+ - The program attempts to write to plaintext.txt
+	- if plaintext.txt exists and has content you will be asked to confirm if you want to overwrite it
+		- If you select yes your file will be encrypted to plaintext.txt
+
+ - After success it will display the decrypted content and write it into plaintext.txt
