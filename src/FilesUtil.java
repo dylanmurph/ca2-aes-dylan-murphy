@@ -128,6 +128,9 @@ public class FilesUtil {
 
             while (fileReader.hasNextLine()) {
                 fileContent.append(fileReader.nextLine());
+                if (fileReader.hasNextLine()) {
+                    fileContent.append("\n");
+                }
             }
 
             //checking to make sure the file has something to read
