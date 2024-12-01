@@ -2,6 +2,7 @@
 //encrypt and decrypt logic with the required validation and error checking.
 
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -28,9 +29,9 @@ public class CipherUtil {
     }
 
     //Function to create the cipher to be used for encrypting/decrypting using either ENCRYPT_MODE or DECRYPT_MODE
-    public static Cipher setupCipher(String key, int cipherMode) {
-        //using a static ivSpec
-        IvParameterSpec ivSpec = new IvParameterSpec(new byte[16]);
+    public static Cipher setupCipher(String key, int cipherMode, byte[] iv) {
+        //using a randomised ivSpec
+        IvParameterSpec ivSpec = new IvParameterSpec(iv);
         try {
             //converting base64 string to a java secretkey compatible with the AES encryption
             SecretKey secretKey = new SecretKeySpec(Base64.getDecoder().decode(key),"AES");
@@ -47,11 +48,23 @@ public class CipherUtil {
 
     //Function to encrypt a provided string, in this program's case, the fileContent taken from file
     public static String encrypt(String fileContent, String key) {
+        byte[] iv, encryptedContent;
+        String ivString, encryptedContentString;
         try {
-            Cipher cipher = setupCipher(key, Cipher.ENCRYPT_MODE);
+            //creating iv and randomising with secureRandom()
+            iv = new byte[16];
+            new SecureRandom().nextBytes(iv);
+
+            Cipher cipher = setupCipher(key, Cipher.ENCRYPT_MODE, iv);
+
             if (cipher != null) {
-                //converts string into bytes, encrypts, then converts and returns string
-                return Base64.getEncoder().encodeToString(cipher.doFinal(fileContent.getBytes(StandardCharsets.UTF_8)));
+                //encrypting fileContent
+                encryptedContent = cipher.doFinal(fileContent.getBytes(StandardCharsets.UTF_8));
+
+                //converting both to base64 and returning them as string
+                ivString = Base64.getEncoder().encodeToString(iv);
+                encryptedContentString = Base64.getEncoder().encodeToString(encryptedContent);
+                return ivString + encryptedContentString;
             }
         } catch (Exception e) {
             System.out.println("Error while encrypting: " + e.getMessage());
@@ -62,11 +75,20 @@ public class CipherUtil {
 
     //Function to decrypt a provided string, in this program's case, the fileContent taken from file
     public static String decrypt(String fileContent, String key) {
+        byte[] iv, decryptedContent;
+        String decryptedContentString;
         try {
-            Cipher cipher = setupCipher(key, Cipher.DECRYPT_MODE);
+            //extracting the IV from encrypted content using substring of fileContent
+            //16 bytes = 24 characters in base64. https://stackoverflow.com/a/19600191
+            iv = Base64.getDecoder().decode(fileContent.substring(0, 24));
+
+            Cipher cipher = setupCipher(key, Cipher.DECRYPT_MODE, iv);
             if (cipher != null) {
-                //converts encrypted string into bytes, decrypts, then converts and returns string
-                return new String(cipher.doFinal(Base64.getDecoder().decode(fileContent)));
+                //converting encrypted string to bytes whilst excluding the iv
+                decryptedContent = Base64.getDecoder().decode(fileContent.substring(24));
+                //decrypting content, converting to string and returning it
+                decryptedContentString = new String(cipher.doFinal(decryptedContent));
+                return decryptedContentString;
             }
         } catch (Exception e) {
             System.out.println("Error while decrypting: " + e.getMessage());
