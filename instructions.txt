@@ -32,6 +32,7 @@ at any stage you can input '0' to return to the main menu
 	- If the file doesn't exist: You will be asked if you would like to create the file and follow the prompts. 
 
 	- If the file exists: you will be asked for a decryption key
+		- the user has 3 attempts before being locked for 10 seconds, this will increase for every 3 failed attemps
  
  - The program attempts to write to plaintext.txt
 	- if plaintext.txt exists and has content you will be asked to confirm if you want to overwrite it
