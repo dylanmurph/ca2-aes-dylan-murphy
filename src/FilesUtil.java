@@ -9,8 +9,6 @@ import java.util.Scanner;
 
 public class FilesUtil {
     private static final Scanner kb = new Scanner(System.in);
-    public static final String TEXT_RED    = "\u001B[31m";
-    public static final String TEXT_GREEN  = "\u001B[32m";
     //Function to verify the file is an existing valid .txt file.
     public static boolean isValidTxt(String filename) {
         //ensuring .txt extension is at the end of the filename
