@@ -23,7 +23,7 @@ public class CipherUtil {
             return Base64.getEncoder().encodeToString(secretKey.getEncoded());
 
         } catch (Exception e) {
-            System.out.println("Error generating key: " + e.getMessage());
+            System.out.println(ColourUtil.red("Error generating key: " + e.getMessage()));
             return null;
         }
     }
@@ -41,7 +41,7 @@ public class CipherUtil {
             cipher.init(cipherMode, secretKey, ivSpec);
             return cipher;
         } catch (Exception e) {
-            System.out.println("Error initialising cipher: " + e.getMessage());
+            System.out.println(ColourUtil.red("Error initialising cipher: " + e.getMessage()));
             return null;
         }
     }
@@ -67,7 +67,7 @@ public class CipherUtil {
                 return ivString + encryptedContentString;
             }
         } catch (Exception e) {
-            System.out.println("Error while encrypting: " + e.getMessage());
+            System.out.println(ColourUtil.red("Error while encrypting: " + e.getMessage()));
             return null;
         }
         return null;
@@ -91,7 +91,7 @@ public class CipherUtil {
                 return decryptedContentString;
             }
         } catch (Exception e) {
-            System.out.println("Error while decrypting: " + e.getMessage());
+            System.out.println(ColourUtil.red("Error while decrypting: " + e.getMessage()));
             return null;
         }
         return null;
