@@ -9,7 +9,8 @@ import java.util.Scanner;
 
 public class FilesUtil {
     private static final Scanner kb = new Scanner(System.in);
-
+    public static final String TEXT_RED    = "\u001B[31m";
+    public static final String TEXT_GREEN  = "\u001B[32m";
     //Function to verify the file is an existing valid .txt file.
     public static boolean isValidTxt(String filename) {
         //ensuring .txt extension is at the end of the filename
@@ -52,7 +53,7 @@ public class FilesUtil {
                 case "0":
                     Main.showMenu();
                 default:
-                    System.out.println("Please enter '1' or '2'");
+                    System.out.println(ColourUtil.red("Please enter '1' or '2'"));
             }
         }
     }
@@ -85,7 +86,7 @@ public class FilesUtil {
             File newFile = new File(filename);
 
             if (newFile.isFile()) {
-                System.out.println("File " + filename + " already exists, use another name.");
+                System.out.println(ColourUtil.red("File " + filename + " already exists, use another name."));
                 continue;
             }
 
@@ -103,14 +104,14 @@ public class FilesUtil {
         try {
             writeFile(filename, input);
             if (input.isEmpty()) {
-                System.out.println("File created successfully - However you will need to populate it before you can use it for Encrypting a file");
+                System.out.println(ColourUtil.green("File created successfully - However you will need to populate it before you can use it for Encrypting a file"));
                 return true;
             }
 
-            System.out.println("File created successfully, you can now use " + filename);
+            System.out.println(ColourUtil.green("File created successfully, you can now use " + filename));
             return true;
         } catch (Exception e) {
-            System.out.println("Failed to create file: " + e.getMessage());
+            System.out.println(ColourUtil.red("Failed to create file: " + e.getMessage()));
             return false;
         }
     }
@@ -135,14 +136,13 @@ public class FilesUtil {
 
             //checking to make sure the file has something to read
             if (fileContent.isEmpty()) {
-                System.out.println("Error: File is empty");
                 return null;
             }
 
             return fileContent.toString();
 
         } catch (FileNotFoundException e) {
-            System.out.println("File not found error: " + e.getMessage());
+            System.out.println(ColourUtil.red("File not found error: " + e.getMessage()));
             return null;
         }
     }
@@ -154,7 +154,7 @@ public class FilesUtil {
             f.write(text);
             f.close();
         } catch (IOException e) {
-            System.out.println("File write error: " + e.getMessage());
+            System.out.println(ColourUtil.red("File write error: " + e.getMessage()));
         }
     }
 
@@ -166,7 +166,7 @@ public class FilesUtil {
             while (true) {
                 System.out.println("\nChecking if " + filename + " is empty...");
                 System.out.println("""
-                        Warning: This file already contains data.
+                        \u001B[91mWarning: This file already contains data.\u001B[0m
                         Do you want to overwrite it?
                         1. Yes
                         2. No
@@ -180,7 +180,7 @@ public class FilesUtil {
                     case "2":
                     case "n":
                     case "no":
-                        System.out.println("File Write Canceled");
+                        System.out.println(ColourUtil.red("File Write Canceled"));
                         return false;
                     case "0":
                         Main.showMenu();
@@ -220,7 +220,7 @@ public class FilesUtil {
                     return fileContent;
                 }
             }
-            System.out.println("Please Try Again");
+            System.out.println(ColourUtil.red("Error: File is empty"));
         }
     }
 }

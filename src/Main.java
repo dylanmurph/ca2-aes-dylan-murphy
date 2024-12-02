@@ -35,7 +35,7 @@ public class Main {
                     System.out.println("Exiting the application.");
                     break;
                 default:
-                    System.out.println("Error, Please type a valid option.");
+                    System.out.println(ColourUtil.red("Error, Please type a valid option."));
             }
         } while (!input.equals("3"));
     }

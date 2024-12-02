@@ -24,12 +24,12 @@ public class Encrypt {
 
         if (FilesUtil.confirmFileEmpty("ciphertext.txt")) {
             FilesUtil.writeFile("ciphertext.txt", encryptedContent);
-            System.out.println("\nFile encrypted successfully!");
-            System.out.println("Encrypted file saved to: " + new File("ciphertext.txt").getAbsolutePath());
+            System.out.println(ColourUtil.green("\nFile encrypted successfully!"));
+            System.out.println("Encrypted file saved to: \n" + new File("ciphertext.txt").getAbsolutePath());
             System.out.println("Key for decryption (Keep this safe) :");
             System.out.println(key);
             return;
         }
-        System.out.println("Error encrypting file.");
+        System.out.println(ColourUtil.red("Error encrypting file."));
     }
 }
